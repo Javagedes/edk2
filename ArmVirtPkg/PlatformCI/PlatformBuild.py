@@ -7,6 +7,7 @@
 import os
 import logging
 import io
+import importlib
 
 from edk2toolext.environment import shell_environment
 from edk2toolext.environment.uefi_build import UefiBuilder
@@ -39,6 +40,9 @@ class CommonPlatform():
 
 
 class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSettingsManager):
+
+    def __init__(self):
+        self.UseBuiltInBaseTools = None
 
     def GetPackagesSupported(self):
         ''' return iterable of edk2 packages supported by this build.
@@ -105,7 +109,18 @@ class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSetting
         scopes = CommonPlatform.Scopes
         ActualToolChainTag = shell_environment.GetBuildVars().GetValue("TOOL_CHAIN_TAG", "")
 
-        if GetHostInfo().os.upper() == "LINUX" and ActualToolChainTag.upper().startswith("GCC"):
+        is_linux = GetHostInfo().os.upper() == "LINUX"
+
+        if self.UseBuiltInBaseTools is None:
+            if importlib.util.find_spec('edk2basetools') is not None:
+                self.UseBuiltInBaseTools = True
+            else:
+                self.UseBuiltInBaseTools = False
+
+        if self.UseBuiltInBaseTools is True:
+            scopes += ('pipbuild-unix',) if is_linux else ('pipbuild-win',)
+
+        if is_linux and ActualToolChainTag.upper().startswith("GCC"):
             if "AARCH64" in self.ActualArchitectures:
                 scopes += ("gcc_aarch64_linux",)
             if "ARM" in self.ActualArchitectures:
@@ -149,6 +164,7 @@ class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSetting
 
 class PlatformBuilder(UefiBuilder, BuildSettingsManager):
     def __init__(self):
+        self.UseBuiltInBaseTools = None
         UefiBuilder.__init__(self)
 
     def AddCommandLineOptions(self, parserObj):
@@ -179,7 +195,20 @@ class PlatformBuilder(UefiBuilder, BuildSettingsManager):
         ActualToolChainTag = shell_environment.GetBuildVars().GetValue("TOOL_CHAIN_TAG", "")
         Arch = shell_environment.GetBuildVars().GetValue("TARGET_ARCH", "")
 
-        if GetHostInfo().os.upper() == "LINUX" and ActualToolChainTag.upper().startswith("GCC"):
+        is_linux = GetHostInfo().os.upper() == "LINUX"
+
+        if self.UseBuiltInBaseTools is None:
+            if importlib.util.find_spec('edk2basetools') is not None:
+                self.UseBuiltInBaseTools = True
+                logging.warning("Using Pip Tools based BaseTools")
+            else:
+                self.UseBuiltInBaseTools = False
+                logging.warning("Falling back to using in-tree BaseTools")
+
+        if self.UseBuiltInBaseTools is True:
+            scopes += ('pipbuild-unix',) if is_linux else ('pipbuild-win',)
+
+        if is_linux and ActualToolChainTag.upper().startswith("GCC"):
             if "AARCH64" == Arch:
                 scopes += ("gcc_aarch64_linux",)
             elif "ARM" == Arch:
