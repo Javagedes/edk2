@@ -7,6 +7,7 @@
 import os
 import logging
 import io
+import importlib
 
 from edk2toolext.environment import shell_environment
 from edk2toolext.environment.uefi_build import UefiBuilder
@@ -14,13 +15,16 @@ from edk2toolext.invocables.edk2_platform_build import BuildSettingsManager
 from edk2toolext.invocables.edk2_setup import SetupSettingsManager, RequiredSubmodule
 from edk2toolext.invocables.edk2_update import UpdateSettingsManager
 from edk2toolext.invocables.edk2_pr_eval import PrEvalSettingsManager
-from edk2toollib.utility_functions import RunCmd
+from edk2toollib.utility_functions import RunCmd, GetHostInfo
 
 
     # ####################################################################################### #
     #                         Configuration for Update & Setup                                #
     # ####################################################################################### #
 class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSettingsManager):
+
+    def __init__(self):
+        self.UseBuiltInBaseTools = None
 
     def GetPackagesSupported(self):
         ''' return iterable of edk2 packages supported by this build.
@@ -81,7 +85,19 @@ class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSetting
 
     def GetActiveScopes(self):
         ''' return tuple containing scopes that should be active for this process '''
-        return CommonPlatform.Scopes
+
+        scopes = CommonPlatform.Scopes
+        is_linux = GetHostInfo().os.upper() == "LINUX"
+        if self.UseBuiltInBaseTools is None:
+            if importlib.util.find_spec('edk2basetools') is not None:
+                self.UseBuiltInBaseTools = True
+            else:
+                self.UseBuiltInBaseTools = False
+
+        if self.UseBuiltInBaseTools is True:
+            scopes += ('pipbuild-unix',) if is_linux else ('pipbuild-win',)
+
+        return scopes
 
     def FilterPackagesToTest(self, changedFilesList: list, potentialPackagesList: list) -> list:
         ''' Filter other cases that this package should be built
@@ -118,6 +134,7 @@ class SettingsManager(UpdateSettingsManager, SetupSettingsManager, PrEvalSetting
     # ####################################################################################### #
 class PlatformBuilder( UefiBuilder, BuildSettingsManager):
     def __init__(self):
+        self.UseBuiltInBaseTools = None
         UefiBuilder.__init__(self)
 
     def AddCommandLineOptions(self, parserObj):
@@ -144,7 +161,21 @@ class PlatformBuilder( UefiBuilder, BuildSettingsManager):
 
     def GetActiveScopes(self):
         ''' return tuple containing scopes that should be active for this process '''
-        return CommonPlatform.Scopes
+
+        scopes = CommonPlatform.Scopes
+        is_linux = GetHostInfo().os.upper() == "LINUX"
+        if self.UseBuiltInBaseTools is None:
+            if importlib.util.find_spec('edk2basetools') is not None:
+                self.UseBuiltInBaseTools = True
+                logging.warning("Using Pip Tools based BaseTools")
+            else:
+                self.UseBuiltInBaseTools = False
+                logging.warning("Falling back to using in-tree BaseTools")
+
+        if self.UseBuiltInBaseTools is True:
+            scopes += ('pipbuild-unix',) if is_linux else ('pipbuild-win',)
+
+        return scopes
 
     def GetName(self):
         ''' Get the name of the repo, platform, or product being build '''
