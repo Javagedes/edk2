@@ -21,7 +21,7 @@ CommonLibBinderAllocate (
   )
 {
   return (VOID *) malloc (Size);
-}
+}asdf
 
 VOID
 CommonLibBinderFree (

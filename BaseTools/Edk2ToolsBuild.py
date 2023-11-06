@@ -141,7 +141,9 @@ class Edk2ToolsBuild(BaseAbstractInvocable):
             for level, problem in problems:
                 logging.log(level, problem)
             if ret != 0:
-                raise Exception("Failed to build.")
+                e = "Failed to run nmake.exe. Review Buildlog at BaseTools/BaseToolsBuild/BASETOOLS_BUILD.txt for nmake.exe error."
+                logging.error(e)
+                return ret
 
             self.WritePathEnvFile(self.OutputDir)
             return ret
@@ -156,7 +158,9 @@ class Edk2ToolsBuild(BaseAbstractInvocable):
             for level, problem in problems:
                 logging.log(level, problem)
             if ret != 0:
-                raise Exception("Failed to build.")
+                e = "Failed to run make. Review Buildlog at BaseTools/BaseToolsBuild/BASETOOLS_BUILD.txt for make error."
+                logging.error(e)
+                return ret
 
             self.OutputDir = os.path.join(
                 shell_env.get_shell_var("EDK_TOOLS_PATH"), "Source", "C", "bin")
