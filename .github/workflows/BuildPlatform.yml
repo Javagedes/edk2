@@ -12,18 +12,41 @@ name: Build Platform
 on:
   workflow_call:
     inputs:
+      python-version:
+        required: true
+        description: 'The version of Python to use for the job'
+        type: string
+        default: '3.12'
       runs-on:
         required: true
         description: 'The runner type to use for the job'
         type: string
         default: 'ubuntu-latest'
+      build-file:
+        required: true
+        description: 'The path to the stuart build script'
+        type: string
 
 jobs:
   build:
     name: Build Platform
 
     runs-on: ${{ inputs.runs-on }}
+    container:
+      image: ${{ startswith(inputs.runs-on, 'ubuntu') && 'ghcr.io/tianocore/containers/fedora-40-dev:latest' || '' }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+        if: ${{ !startsWith(inputs.runs-on, 'ubuntu') }}
+      
+      - run: ls
+
+      - run: |
+          pip install -r pip-requirements.txt --upgrade
+        name: 'Install/Upgrade pip modules'

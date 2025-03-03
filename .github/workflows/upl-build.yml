@@ -15,8 +15,14 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.12']
     name: Build UPL
     uses: ./.github/workflows/BuildPlatform.yml
     with:
-      runs-on: ubuntu-latest
+      runs-on: ${{ matrix.os }}
+      build-file: 'UefiPayloadPackage/PlatformCI/PlatformBuild.py'
+      python-version: ${{ matrix.python-version }}
     secrets: inherit
