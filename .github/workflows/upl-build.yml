@@ -14,15 +14,31 @@ on:
     branches: ['master']
 
 jobs:
-  build:
+  build_vs2022:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
         python-version: ['3.12']
-    name: Build UPL
+        tool-chain: ['VS2022']
+    name: Build UPL VS2022
     uses: ./.github/workflows/BuildPlatform.yml
     with:
       runs-on: ${{ matrix.os }}
-      build-file: 'UefiPayloadPackage/PlatformCI/PlatformBuild.py'
+      build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
       python-version: ${{ matrix.python-version }}
+      tool-chain: ${{ matrix.tool-chain }}
     secrets: inherit
+
+  build_gcc:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.12']
+        tool-chain: ['GCC']
+    name: Build UPL GCC
+    uses: ./.github/workflows/BuildPlatform.yml
+    with:
+      runs-on: ${{ matrix.os }}
+      build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
+      python-version: ${{ matrix.python-version }}
+      tool-chain: ${{ matrix.tool-chain }}
