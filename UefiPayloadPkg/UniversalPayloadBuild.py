@@ -174,7 +174,7 @@ def BuildUniversalPayload(Args):
     # Building Universal Payload entry.
     #
     if Args.PreBuildUplBinary is None:
-        BuildModule = "build -p {} -b {} -a {} -m {} -t {} -y {} {}".format (DscPath, BuildTarget, BuildArch, EntryModuleInf, PayloadEntryToolChain, ModuleReportPath, Quiet)
+        BuildModule = "build -p {} -b {} -a {} -m {} -t {} -y {} -v {}".format (DscPath, BuildTarget, BuildArch, EntryModuleInf, PayloadEntryToolChain, ModuleReportPath, Quiet)
         BuildModule += Pcds
         BuildModule += Defines
         RunCommand(BuildModule)
