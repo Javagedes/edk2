@@ -39,6 +39,11 @@ on:
         description: 'Extra arguments to pass to the build script'
         type: string
         default: ''
+      extra-pip-requirements:
+        required: false
+        description: 'Extra pip requirements to install'
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -64,7 +69,7 @@ jobs:
         if: ${{ !startsWith(inputs.runs-on, 'ubuntu') }}
 
       - run: |
-          pip install -r pip-requirements.txt --upgrade
+          pip install --upgrade ${{ inputs.extra-pip-requirements }} -r pip-requirements.txt 
         name: 'Install/Upgrade pip modules'
       
       - run: |

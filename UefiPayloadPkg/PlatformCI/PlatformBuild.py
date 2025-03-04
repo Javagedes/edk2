@@ -219,6 +219,6 @@ class PlatformBuilder(UefiBuilder, BuildSettingsManager):
         default_args = InitArgumentParser(True)
         default_args.Arch = self.args.build_arch
         default_args.ToolChain = self.env.GetValue("TOOL_CHAIN_TAG")
-        default_args.Fit = self.env.GetValue("FIT_BUILD") != None
+        default_args.Fit = self.env.GetValue("FIT_BUILD", "FALSE") != "FALSE"
         default_args.CiBuild = True
         return UniversalPayloadFullBuild(default_args)

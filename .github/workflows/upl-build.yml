@@ -21,7 +21,7 @@ jobs:
         python-version: ['3.12']
         tool-chain: ['VS2022']
         target: ['DEBUG', 'RELEASE']
-        extra-build-args: ['FIT_BUILD=TRUE', '']
+        extra-build-args: ['FIT_BUILD=TRUE', 'FIT_BUILD=FALSE']
     name: Build UPL VS2022
     uses: ./.github/workflows/BuildPlatform.yml
     with:
@@ -31,6 +31,7 @@ jobs:
       tool-chain: ${{ matrix.tool-chain }}
       target: ${{ matrix.target }}
       extra-build-args: ${{ matrix.extra-build-args }}
+      extra-pip-requirements: 'pefile pylibfdt'
     secrets: inherit
 
   # build_gcc:
