@@ -95,3 +95,18 @@ jobs:
       - run: |
           stuart_build -c ${{ inputs.build-file }} TARGET=${{ inputs.target}} TOOL_CHAIN_TAG=${{ inputs.tool-chain }} ${{ inputs.extra-build-args }}
         name: 'Build Platform'
+      
+      - name: Upload BaseTools Build Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: BaseTools Build Logs
+          path: |
+            BaseTools/BaseToolsBuild/*
+        if: always()
+      
+      - name: Upload Platform Build Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: Platform Build Logs
+          path: |
+            Build/*.txt
