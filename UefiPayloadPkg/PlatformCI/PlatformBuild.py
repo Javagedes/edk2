@@ -203,7 +203,7 @@ class PlatformBuilder(UefiBuilder, BuildSettingsManager):
                 shell_environment.ShellEnvironment().set_shell_var(key, "x86")
             elif self.env.GetValue("TARGET_ARCH") == "X64":
                 shell_environment.ShellEnvironment().set_shell_var(key, "x64")
-        shell_environment.ShellEnvironment().set_shell_var("CLANG_HOST_BIN", "n")
+            shell_environment.ShellEnvironment().set_shell_var("CLANG_HOST_BIN", "n")
         self.env.SetValue ("BLD_*_BUILD_ARCH", self.args.build_arch, "build_arch")
         self.env.SetValue ("BLD_*_UNIVERSAL_PAYLOAD", "TRUE", "build UPL")
 
