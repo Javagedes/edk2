@@ -99,7 +99,7 @@ jobs:
       - name: Upload BaseTools Build Logs
         uses: actions/upload-artifact@v4
         with:
-          name: BaseTools Build Logs
+          name: BaseTools Build Logs ${{ inputs.tool-chain }} ${{ inputs.target }} ${{ inputs.extra-build-args }}
           path: |
             BaseTools/BaseToolsBuild/*
         if: always()
@@ -107,7 +107,7 @@ jobs:
       - name: Upload Platform Build Logs
         uses: actions/upload-artifact@v4
         with:
-          name: Platform Build Logs
+          name: Platform Build Logs ${{ inputs.tool-chain }} ${{ inputs.target }} ${{ inputs.extra-build-args }}
           path: |
             Build/*.txt
         if: always()
