@@ -30,6 +30,11 @@ on:
         required: true
         description: 'The tool chain to use for the build'
         type: string
+      extra-build-args:
+        required: false
+        description: 'Extra arguments to pass to the build script'
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -70,5 +75,5 @@ jobs:
           python BaseTools/Edk2ToolsBuild.py -t ${{ inputs.tool-chain }}
       
       - run: |
-          stuart_build -c ${{ inputs.build-file }} TOOL_CHAIN_TAG=${{ inputs.tool-chain }}
+          stuart_build -c ${{ inputs.build-file }} TOOL_CHAIN_TAG=${{ inputs.tool-chain }} ${{ inputs.extra-build-args }}
         name: 'Build Platform'

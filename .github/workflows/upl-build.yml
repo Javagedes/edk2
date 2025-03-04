@@ -27,7 +27,23 @@ jobs:
       build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
       python-version: ${{ matrix.python-version }}
       tool-chain: ${{ matrix.tool-chain }}
+      extra-build-args: 'FIT_BUILD=TRUE'
     secrets: inherit
+
+  build_clang:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.12']
+        tool-chain: ['CLANGDWARF']
+    name: Build UPL CLANGDWARF
+    uses: ./.github/workflows/BuildPlatform.yml
+    with:
+      runs-on: ${{ matrix.os }}
+      build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
+      python-version: ${{ matrix.python-version }}
+      tool-chain: ${{ matrix.tool-chain }}
+      extra-build-args: ''
 
   build_gcc:
     strategy:
@@ -42,3 +58,4 @@ jobs:
       build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
       python-version: ${{ matrix.python-version }}
       tool-chain: ${{ matrix.tool-chain }}
+      extra-build-args: 'FIT_BUILD=TRUE'
