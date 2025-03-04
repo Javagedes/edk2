@@ -49,6 +49,11 @@ on:
         description: 'Extra setup commands to run'
         type: string
         default: ''
+      extra-artifact-path:
+        required: false
+        description: 'Extra artifact paths to upload'
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -96,18 +101,12 @@ jobs:
           stuart_build -c ${{ inputs.build-file }} TARGET=${{ inputs.target}} TOOL_CHAIN_TAG=${{ inputs.tool-chain }} ${{ inputs.extra-build-args }}
         name: 'Build Platform'
       
-      - name: Upload BaseTools Build Logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: BaseTools Build Logs ${{ inputs.tool-chain }} ${{ inputs.target }} ${{ inputs.extra-build-args }}
-          path: |
-            BaseTools/BaseToolsBuild/*
-        if: always()
-      
       - name: Upload Platform Build Logs
         uses: actions/upload-artifact@v4
         with:
           name: Platform Build Logs ${{ inputs.tool-chain }} ${{ inputs.target }} ${{ inputs.extra-build-args }}
           path: |
             Build/*.txt
+            BaseTools/BaseToolsBuild/*
+            ${{ inputs.extra-artifact-path }}
         if: always()
