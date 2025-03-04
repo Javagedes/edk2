@@ -34,18 +34,21 @@ jobs:
       extra-pip-requirements: 'pefile pylibfdt'
     secrets: inherit
 
-  # build_gcc:
-  #   strategy:
-  #     matrix:
-  #       os: [ubuntu-latest]
-  #       python-version: ['3.12']
-  #       tool-chain: ['GCC']
-  #       extra-build-args: ['FIT_BUILD=TRUE', '']
-  #   name: Build UPL GCC
-  #   uses: ./.github/workflows/BuildPlatform.yml
-  #   with:
-  #     runs-on: ${{ matrix.os }}
-  #     build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
-  #     python-version: ${{ matrix.python-version }}
-  #     tool-chain: ${{ matrix.tool-chain }}
-  #     extra-build-args: ${{ matrix.extra-build-args }}
+  build_gcc:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.12']
+        tool-chain: ['GCC']
+        target: ['DEBUG', 'RELEASE']
+        extra-build-args: ['FIT_BUILD=TRUE', 'FIT_BUILD=FALSE']
+    name: Build UPL GCC
+    uses: ./.github/workflows/BuildPlatform.yml
+    with:
+      runs-on: ${{ matrix.os }}
+      build-file: 'UefiPayloadPkg/PlatformCI/PlatformBuild.py'
+      python-version: ${{ matrix.python-version }}
+      tool-chain: ${{ matrix.tool-chain }}
+      target: ${{ matrix.target }}
+      extra-build-args: ${{ matrix.extra-build-args }}
+      extra-pip-requirements: 'pefile pylibfdt'
