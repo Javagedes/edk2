@@ -52,3 +52,4 @@ jobs:
       target: ${{ matrix.target }}
       extra-build-args: ${{ matrix.extra-build-args }}
       extra-pip-requirements: 'pefile pylibfdt'
+      extra-setup-cmd: 'sudo dnf install llvm clang'

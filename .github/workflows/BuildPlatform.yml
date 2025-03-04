@@ -44,6 +44,11 @@ on:
         description: 'Extra pip requirements to install'
         type: string
         default: ''
+      extra-setup-cmd:
+        required: false
+        description: 'Extra setup commands to run'
+        type: string
+        default: ''
 
 jobs:
   build:
@@ -71,6 +76,10 @@ jobs:
       - run: |
           pip install --upgrade ${{ inputs.extra-pip-requirements }} -r pip-requirements.txt 
         name: 'Install/Upgrade pip modules'
+      
+      - run: ${{ inputs.extra-setup-cmd }}
+        name: 'Extra Setup Commands'
+        if: ${{ inputs.extra-setup-cmd != '' }}
       
       - run: |
           stuart_setup -c ${{ inputs.build-file }}
